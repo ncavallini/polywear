@@ -1,0 +1,19 @@
+*.iml
+.gradle/
+.kotlin/
+/local.properties
+/.idea/
+.DS_Store
+# ignore build output in every module, not just the root
+build/
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+*.keystore
+!debug.keystore
+# stray build/run logs
+*.log
+build-log.txt
+# built APKs belong in GitHub Releases, not the repo history
+/apk/

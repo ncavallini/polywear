@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PolyWear Login</string>
+    <string name="send_to_watch">Send credential to watch</string>
+    <string name="status_loading">Loading eduapp…</string>
+    <string name="status_page">Page: %1$s</string>
+    <string name="status_capturing">Capturing credential…</string>
+    <string name="status_no_credential">No credential found. Make sure you are logged in.</string>
+    <string name="status_sent">Sent %1$s credential to %2$d watch(es).</string>
+</resources>
