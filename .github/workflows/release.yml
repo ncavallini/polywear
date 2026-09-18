@@ -1,0 +1,61 @@
+name: Build & Release
+
+# Publishes a GitHub Release with the built APKs whenever a version tag is
+# pushed (e.g. `git tag v0.1.0 && git push origin v0.1.0`), or on manual dispatch.
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to create (e.g. v0.1.0)'
+        required: true
+
+permissions:
+  contents: write   # needed to create the release and its tag
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run unit tests
+        run: ./gradlew :wear:testDebugUnitTest
+
+      # Debug APKs are signed with the auto-generated debug key. Both modules are
+      # built in the same job, so they share that key and pair over the Data Layer.
+      # For a Play Store / public build, add a real signing config + keystore secret
+      # and switch these to assembleRelease.
+      - name: Build APKs
+        run: ./gradlew :wear:assembleDebug :mobile:assembleDebug
+
+      - name: Collect APKs
+        run: |
+          mkdir -p dist
+          find wear/build/outputs/apk/debug   -name '*.apk' -exec cp {} dist/polywear-watch-debug.apk \;
+          find mobile/build/outputs/apk/debug -name '*.apk' -exec cp {} dist/polywear-phone-debug.apk \;
+          ls -lh dist
+
+      - name: Resolve tag
+        id: tag
+        run: echo "name=${{ github.event.inputs.tag || github.ref_name }}" >> "$GITHUB_OUTPUT"
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.name }}
+          name: PolyWear ${{ steps.tag.outputs.name }}
+          generate_release_notes: true
+          files: dist/*.apk

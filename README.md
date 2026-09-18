@@ -52,14 +52,16 @@ Layer associates them automatically. They must be **signed with the same key**.
 
 ## Build
 
-The Gradle wrapper JAR is not committed. Either open the project in **Android
-Studio** (it generates the wrapper), or run once with a local Gradle 8.11+:
-`gradle wrapper`. Then:
+Uses the committed Gradle wrapper (Gradle 8.9) — no extra setup needed:
 
 ```bash
 ./gradlew :wear:assembleDebug :mobile:assembleDebug
 ./gradlew :wear:testDebugUnitTest        # unit tests (SemesterUtil, parsing/grouping)
 ```
+
+Tagged releases (`v*`) are built and published automatically by the
+[Build & Release workflow](.github/workflows/release.yml), which attaches the
+watch and phone APKs to a GitHub Release.
 
 ## Run
 
@@ -96,5 +98,7 @@ Package: `ch.ncavallini.polywear`.
 
 ## License
 
-No license is granted yet — see the repository owner. (Add a `LICENSE` file before
-accepting contributions or redistributing.)
+[MIT](LICENSE) © 2026 Niccolò Cavallini.
+
+This license covers PolyWear's own source code only. It grants no rights to ETH
+Zürich's services, APIs, names, or logos.
