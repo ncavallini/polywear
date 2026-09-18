@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">PolyWear Login</string>
+    <string name="app_title">PolyWear</string>
+    <string name="header_subtitle">Sign in to eduapp to sync your schedule to your watch.</string>
     <string name="send_to_watch">Send credential to watch</string>
     <string name="status_loading">Loading eduapp…</string>
     <string name="status_page">Page: %1$s</string>

@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ic_launcher_background">#1F70B5</color>
+
+    <!-- Brand palette (PolyWear blue) -->
+    <color name="poly_blue">#1F70B5</color>
+    <color name="poly_blue_dark">#155A94</color>
+    <color name="poly_blue_pressed">#134E80</color>
+    <color name="poly_blue_soft">#CCE3F3</color>
+
+    <!-- Surfaces & text -->
+    <color name="background">#F2F4F7</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="divider">#E2E6EC</color>
+    <color name="text_primary">#1A1C1E</color>
+    <color name="text_secondary">#5A6472</color>
+    <color name="button_disabled">#B8C2CF</color>
+    <color name="white">#FFFFFF</color>
 </resources>
