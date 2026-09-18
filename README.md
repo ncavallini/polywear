@@ -20,12 +20,6 @@ that handles login.
 - ✈️ Offline-friendly: the last fetched week is cached and shown when the watch
   has no connection
 
-<p align="center">
-  <img src="shot-list.png" width="30%" alt="Weekly schedule list" />
-  <img src="shot-focus.png" width="30%" alt="Next class in focus" />
-  <img src="shot-detail.png" width="30%" alt="Class detail" />
-</p>
-
 ## How it works — two apps
 
 `GET https://eduapp.ethz.ch/web/gw/schedule?semkez=<sem>` requires authentication
