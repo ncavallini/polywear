@@ -3,7 +3,6 @@ package ch.ncavallini.polywear.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +10,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,6 +54,7 @@ fun ScheduleScreen(
     onEventClick: (String) -> Unit,
     onPreviousWeek: () -> Unit,
     onNextWeek: () -> Unit,
+    onResendFromPhone: () -> Unit,
 ) {
     val listState = rememberScalingLazyListState()
     Scaffold(
@@ -60,7 +64,7 @@ fun ScheduleScreen(
     ) {
         when (state) {
             is ScheduleUiState.Loading -> CenteredProgress()
-            is ScheduleUiState.NeedsAuth -> CenteredMessage("Open the phone app to sign in to eduapp")
+            is ScheduleUiState.NeedsAuth -> NeedsAuthContent(onResendFromPhone)
             is ScheduleUiState.Error -> ErrorContent(state.message, onRetry)
             is ScheduleUiState.Content ->
                 ScheduleList(
@@ -95,6 +99,28 @@ private fun ScheduleList(
     val focusIndex = remember(days) { nextEventItemIndex(days, now) }
     LaunchedEffect(weekLabel) { listState.scrollToItem(focusIndex) }
 
+    // Auto-advance: once the user has scrolled past the last event of a (non-empty)
+    // week to the bottom sentinel, roll on to the next week. Guarded per week so it
+    // fires once, and only after a real scroll (the focus jump above isn't one).
+    var userScrolled by remember(weekLabel) { mutableStateOf(false) }
+    var advanced by remember(weekLabel) { mutableStateOf(false) }
+    LaunchedEffect(weekLabel) {
+        snapshotFlow { listState.isScrollInProgress }
+            .collect { inProgress -> if (inProgress) userScrolled = true }
+    }
+    LaunchedEffect(weekLabel) {
+        snapshotFlow {
+            val info = listState.layoutInfo
+            val lastVisible = info.visibleItemsInfo.lastOrNull()?.index ?: -1
+            lastVisible >= info.totalItemsCount - 1
+        }.collect { atBottom ->
+            if (atBottom && userScrolled && !advanced && days.isNotEmpty()) {
+                advanced = true
+                onNextWeek()
+            }
+        }
+    }
+
     ScalingLazyColumn(
         modifier = Modifier.fillMaxSize(),
         state = listState,
@@ -109,7 +135,7 @@ private fun ScheduleList(
                 textAlign = TextAlign.Center,
             )
         }
-        item { WeekNav(onPreviousWeek, onNextWeek) }
+        item { WeekNavButton(text = "‹ Previous week", onClick = onPreviousWeek) }
         if (days.isEmpty()) {
             item {
                 Text(
@@ -133,33 +159,24 @@ private fun ScheduleList(
             CompactChip(
                 onClick = onRefresh,
                 label = { Text("Refresh") },
-                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
+                modifier = Modifier.padding(top = 8.dp),
             )
         }
+        item { WeekNavButton(text = "Next week ›", onClick = onNextWeek) }
+        // Bottom sentinel: reaching it (after scrolling) triggers auto-advance.
+        item { Spacer(Modifier.height(8.dp)) }
     }
 }
 
 @Composable
-private fun WeekNav(onPreviousWeek: () -> Unit, onNextWeek: () -> Unit) {
-    Row(
+private fun WeekNavButton(text: String, onClick: () -> Unit) {
+    CompactChip(
+        onClick = onClick,
+        label = {
+            Text(text, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+        },
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-        CompactChip(
-            onClick = onPreviousWeek,
-            label = {
-                Text("‹ Prev", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
-            },
-            modifier = Modifier.weight(1f),
-        )
-        CompactChip(
-            onClick = onNextWeek,
-            label = {
-                Text("Next ›", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
-            },
-            modifier = Modifier.weight(1f),
-        )
-    }
+    )
 }
 
 /**
@@ -262,6 +279,28 @@ private fun CenteredProgress() {
 private fun CenteredMessage(message: String) {
     Box(Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
         Text(message, textAlign = TextAlign.Center, style = MaterialTheme.typography.body1)
+    }
+}
+
+@Composable
+private fun NeedsAuthContent(onResendFromPhone: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            "Refreshing your eduapp sign-in from your phone…",
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.body2,
+        )
+        Text(
+            "If it doesn't return, open the phone app to sign in.",
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.caption1,
+            color = MaterialTheme.colors.onBackground.copy(alpha = 0.6f),
+        )
+        Button(onClick = onResendFromPhone) { Text("Resend") }
     }
 }
 

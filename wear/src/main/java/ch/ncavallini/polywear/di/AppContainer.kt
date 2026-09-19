@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.wear.watchface.complications.datasource.ComplicationDataSourceUpdateRequester
 import ch.ncavallini.polywear.BuildConfig
 import ch.ncavallini.polywear.auth.AuthInterceptor
+import ch.ncavallini.polywear.auth.CredentialRequestSender
 import ch.ncavallini.polywear.auth.TokenStore
 import ch.ncavallini.polywear.complication.NextClassComplicationService
 import ch.ncavallini.polywear.data.ScheduleApi
@@ -29,6 +30,9 @@ class AppContainer(context: Context) {
     }
 
     val tokenStore = TokenStore(appContext)
+
+    /** Used to ask the phone for a fresh credential when ours is rejected. */
+    val credentialRequestSender = CredentialRequestSender(appContext)
 
     private val cache = ScheduleCache(appContext)
 

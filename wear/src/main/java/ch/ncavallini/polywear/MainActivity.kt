@@ -44,6 +44,7 @@ class MainActivity : ComponentActivity() {
                             },
                             onPreviousWeek = viewModel::previousWeek,
                             onNextWeek = viewModel::nextWeek,
+                            onResendFromPhone = viewModel::requestCredentialFromPhone,
                         )
                     }
                     composable("$ROUTE_DETAIL/{eventId}") { entry ->

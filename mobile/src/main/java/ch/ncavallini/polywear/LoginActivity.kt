@@ -68,6 +68,9 @@ class LoginActivity : ComponentActivity() {
         lifecycleScope.launch {
             val delivered = runCatching { sender.send(captured) }.getOrDefault(0)
             binding.status.text = getString(R.string.status_sent, captured.type, delivered)
+            // We have a working session on the phone now — start the periodic
+            // background refresh so the watch stays topped up on its own.
+            CredentialRefreshWorker.schedule(this@LoginActivity)
         }
     }
 

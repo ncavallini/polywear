@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import ch.ncavallini.polywear.auth.CredentialRequestSender
 import ch.ncavallini.polywear.auth.TokenStore
 import ch.ncavallini.polywear.data.ScheduleRepository
 import ch.ncavallini.polywear.data.ScheduleResult
@@ -33,6 +34,7 @@ sealed interface ScheduleUiState {
 class ScheduleViewModel(
     private val repository: ScheduleRepository,
     private val tokenStore: TokenStore,
+    private val credentialRequestSender: CredentialRequestSender,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<ScheduleUiState>(ScheduleUiState.Loading)
@@ -46,6 +48,9 @@ class ScheduleViewModel(
     /** `semkez` last successfully fetched from the network this session, if any. */
     private var freshSemkez: String? = null
 
+    /** Guards against re-asking the phone on every emission while we're unauthed. */
+    private var refreshRequested = false
+
     init {
         // Drives the initial load and re-loads whenever the phone delivers (or
         // clears) a credential.
@@ -53,7 +58,14 @@ class ScheduleViewModel(
             tokenStore.credential.collect { credential ->
                 if (credential == null || credential.isExpired) {
                     _state.value = ScheduleUiState.NeedsAuth
+                    // Auto-recover: ask the phone (still SSO-signed-in) to re-mint
+                    // and push a fresh credential, once per auth gap.
+                    if (!refreshRequested) {
+                        refreshRequested = true
+                        requestCredentialFromPhone()
+                    }
                 } else {
+                    refreshRequested = false
                     load()
                 }
             }
@@ -62,6 +74,11 @@ class ScheduleViewModel(
 
     fun refresh() {
         viewModelScope.launch { load() }
+    }
+
+    /** Manually re-ask the phone for a fresh credential (Resend button). */
+    fun requestCredentialFromPhone() {
+        viewModelScope.launch { credentialRequestSender.request() }
     }
 
     fun nextWeek() = navigate(1)
@@ -128,7 +145,13 @@ class ScheduleViewModel(
         private val weekLabelFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMM")
 
         fun factory(container: AppContainer) = viewModelFactory {
-            initializer { ScheduleViewModel(container.scheduleRepository, container.tokenStore) }
+            initializer {
+                ScheduleViewModel(
+                    container.scheduleRepository,
+                    container.tokenStore,
+                    container.credentialRequestSender,
+                )
+            }
         }
     }
 }

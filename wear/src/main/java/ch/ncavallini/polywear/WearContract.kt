@@ -12,6 +12,12 @@ object WearContract {
     const val CREDENTIAL_PATH = "/polywear/credential"
 
     /**
+     * MessageClient path the watch uses to ask the phone to re-mint and re-send a
+     * fresh credential (empty payload). The phone answers back on [CREDENTIAL_PATH].
+     */
+    const val CREDENTIAL_REQUEST_PATH = "/polywear/credential-request"
+
+    /**
      * Payload is UTF-8 JSON: {"type":"BEARER"|"COOKIE","value":"...","expiresAtEpochSeconds":<long?>}
      */
     const val KEY_TYPE = "type"

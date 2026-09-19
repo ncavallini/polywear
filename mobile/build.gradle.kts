@@ -51,4 +51,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
+
+    // Background periodic credential refresh
+    implementation(libs.androidx.work.runtime.ktx)
 }
