@@ -99,8 +99,7 @@ Package: `ch.ncavallini.polywear`.
 - Credential capture is inherently brittle: eduapp login/UI changes can break it.
 - No silent refresh: when the credential expires, re-auth on the phone.
 - **Personal use only.** Automating login / reusing a session cookie may bump
-  against ETH's Acceptable Use Policy — see the disclaimer above. Do not
-  distribute this using ETH's name or logo, and keep it non-commercial.
+  against ETH's Acceptable Use Policy — see the disclaimer above. *(under clarification)*
 
 ## License
 
