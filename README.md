@@ -9,6 +9,12 @@ that handles login.
 > and the ETH logo belong to ETH Zürich; this project does not use them as its
 > branding. PolyWear only accesses *your own* schedule, using *your own* login.
 
+## Screenshots
+
+| Day-grouped week | Class detail | Next day | Complication |
+|:---:|:---:|:---:|:---:|
+| ![Week grouped by day, today highlighted](docs/screenshots/schedule-list.png) | ![Focused next class card](docs/screenshots/class-detail.png) | ![Scrolling into the next day](docs/screenshots/week-days.png) | ![Next-class watch-face complication](docs/screenshots/complication.png) |
+
 ## Features
 
 - 📅 Current week grouped by day, today highlighted
