@@ -34,12 +34,17 @@ object ScheduleMapper {
         )
     }
 
+    // Official eduapp/VVZ lesson types (German source → short English label).
     private fun categoryLabel(type: String?): String? = when (type?.uppercase()) {
-        "V" -> "Lecture"
-        "U" -> "Exercise"
-        "P" -> "Lab"
-        "S" -> "Seminar"
-        "G" -> "Group"
+        "V" -> "Lecture"              // Vorlesung
+        "G" -> "Lecture + Exercise"   // Vorlesung mit Übung
+        "U" -> "Exercise"             // Übung
+        "S" -> "Seminar"              // Seminar
+        "K" -> "Colloquium"           // Kolloquium
+        "P" -> "Lab"                  // Praktikum
+        "A" -> "Project"              // Arbeit / selbständige Arbeit
+        "D" -> "Thesis"               // Diplomarbeit
+        "R" -> "Self-study"           // Repetitorium / Selbststudium
         else -> type
     }
 

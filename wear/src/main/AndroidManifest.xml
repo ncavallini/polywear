@@ -48,9 +48,15 @@
             <meta-data
                 android:name="android.support.wearable.complications.SUPPORTED_TYPES"
                 android:value="SHORT_TEXT,LONG_TEXT,RANGED_VALUE" />
+            <!--
+                The app pushes fresh data on demand (ScheduleRepository.onDataUpdated ->
+                requestUpdateAll), so this periodic self-wake only advances "next class"
+                as time passes. Kept deliberately coarse to save battery; the system may
+                throttle it further on low battery / battery saver.
+            -->
             <meta-data
                 android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
-                android:value="600" />
+                android:value="1800" />
         </service>
 
         <!-- Receives the credential pushed by the phone companion. -->
