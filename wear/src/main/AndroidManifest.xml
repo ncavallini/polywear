@@ -6,6 +6,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".PolyApp"
@@ -49,15 +50,32 @@
                 android:name="android.support.wearable.complications.SUPPORTED_TYPES"
                 android:value="SHORT_TEXT,LONG_TEXT,RANGED_VALUE" />
             <!--
-                The app pushes fresh data on demand (ScheduleRepository.onDataUpdated ->
-                requestUpdateAll), so this periodic self-wake only advances "next class"
-                as time passes. Kept deliberately coarse to save battery; the system may
-                throttle it further on low battery / battery saver.
+                No periodic system wake-up (0): refreshes are scheduled by
+                ComplicationUpdateScheduler at :40 between 06:40 and 20:40 only, plus
+                on-demand pushes after the app fetches new data.
             -->
             <meta-data
                 android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
-                android:value="1800" />
+                android:value="0" />
         </service>
+
+        <!-- Hourly (:40) complication refresh alarm. -->
+        <receiver
+            android:name=".complication.ComplicationUpdateReceiver"
+            android:exported="false" />
+
+        <!-- Re-arms the refresh alarm after reboot, app update or clock/time-zone change. -->
+        <receiver
+            android:name=".complication.ComplicationRescheduleReceiver"
+            android:exported="true"
+            tools:ignore="ExportedReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+            </intent-filter>
+        </receiver>
 
         <!-- Receives the credential pushed by the phone companion. -->
         <service

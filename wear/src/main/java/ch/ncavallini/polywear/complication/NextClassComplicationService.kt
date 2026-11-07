@@ -24,6 +24,9 @@ import java.time.temporal.ChronoUnit
  * cached schedule — the schedule is refreshed by the app, not here. Tapping the
  * complication opens the app.
  *
+ * Refreshes are scheduled by [ComplicationUpdateScheduler] (hourly at :40,
+ * 06:40–20:40) rather than by the system's periodic update.
+ *
  * Supports SHORT_TEXT, LONG_TEXT and RANGED_VALUE (countdown).
  */
 class NextClassComplicationService : SuspendingComplicationDataSourceService() {
@@ -53,7 +56,17 @@ class NextClassComplicationService : SuspendingComplicationDataSourceService() {
         }
     }
 
+    override fun onComplicationActivated(complicationInstanceId: Int, type: ComplicationType) {
+        ComplicationUpdateScheduler.onActivated(this, complicationInstanceId)
+    }
+
+    override fun onComplicationDeactivated(complicationInstanceId: Int) {
+        ComplicationUpdateScheduler.onDeactivated(this, complicationInstanceId)
+    }
+
     override suspend fun onComplicationRequest(request: ComplicationRequest): ComplicationData? {
+        // Keeps the :40 refresh chain armed (also for instances added before it existed).
+        ComplicationUpdateScheduler.onActivated(this, request.complicationInstanceId)
         val now = LocalDateTime.now(zone)
         val event = (application as PolyApp).container.scheduleRepository.nextEventFromCache(now)
         return build(request.complicationType, event, now)
