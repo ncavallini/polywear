@@ -61,8 +61,9 @@ class ScheduleRepository(
     }
 
     /**
-     * The next upcoming (or currently ongoing) event, read only from the cache —
-     * safe to call from a complication/tile where no network/auth is available.
+     * The next event that has not started yet (an ongoing class is skipped), read
+     * only from the cache — safe to call from a complication/tile where no
+     * network/auth is available.
      * Returns null if nothing is cached yet.
      */
     suspend fun nextEventFromCache(now: LocalDateTime = LocalDateTime.now(ZoneId.of("Europe/Zurich"))): ScheduleEvent? {
@@ -72,7 +73,7 @@ class ScheduleRepository(
             ScheduleMapper.toEvents(json.decodeFromString(lessonListSerializer, entry.rawJson))
         }.getOrDefault(emptyList())
         return events
-            .filter { (it.end ?: it.start) >= now }
+            .filter { it.start > now }
             .minByOrNull { it.start }
     }
 

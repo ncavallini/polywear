@@ -7,7 +7,6 @@ import androidx.wear.watchface.complications.data.ComplicationText
 import androidx.wear.watchface.complications.data.ComplicationType
 import androidx.wear.watchface.complications.data.LongTextComplicationData
 import androidx.wear.watchface.complications.data.PlainComplicationText
-import androidx.wear.watchface.complications.data.RangedValueComplicationData
 import androidx.wear.watchface.complications.data.ShortTextComplicationData
 import androidx.wear.watchface.complications.datasource.ComplicationRequest
 import androidx.wear.watchface.complications.datasource.SuspendingComplicationDataSourceService
@@ -17,17 +16,16 @@ import ch.ncavallini.polywear.data.model.ScheduleEvent
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 
 /**
- * Shows the next (or currently ongoing) class on the watch face. Reads only the
+ * Shows the next class (one that has not started yet) on the watch face. Reads only the
  * cached schedule — the schedule is refreshed by the app, not here. Tapping the
  * complication opens the app.
  *
  * Refreshes are scheduled by [ComplicationUpdateScheduler] (hourly at :40,
  * 06:40–20:40) rather than by the system's periodic update.
  *
- * Supports SHORT_TEXT, LONG_TEXT and RANGED_VALUE (countdown).
+ * Supports SHORT_TEXT and LONG_TEXT.
  */
 class NextClassComplicationService : SuspendingComplicationDataSourceService() {
 
@@ -47,11 +45,6 @@ class NextClassComplicationService : SuspendingComplicationDataSourceService() {
                 contentDescription = text("Next class"),
             ).setTitle(text("Big Data")).build()
 
-            ComplicationType.RANGED_VALUE -> RangedValueComplicationData.Builder(
-                value = 135f, min = 0f, max = 180f,
-                contentDescription = text("Next class"),
-            ).setText(text(room)).setTitle(text("Big Data")).build()
-
             else -> null
         }
     }
@@ -69,10 +62,10 @@ class NextClassComplicationService : SuspendingComplicationDataSourceService() {
         ComplicationUpdateScheduler.onActivated(this, request.complicationInstanceId)
         val now = LocalDateTime.now(zone)
         val event = (application as PolyApp).container.scheduleRepository.nextEventFromCache(now)
-        return build(request.complicationType, event, now)
+        return build(request.complicationType, event)
     }
 
-    private fun build(type: ComplicationType, event: ScheduleEvent?, now: LocalDateTime): ComplicationData? {
+    private fun build(type: ComplicationType, event: ScheduleEvent?): ComplicationData? {
         val tap = tapAction()
         if (event == null) {
             return when (type) {
@@ -83,10 +76,6 @@ class NextClassComplicationService : SuspendingComplicationDataSourceService() {
                 ComplicationType.LONG_TEXT -> LongTextComplicationData.Builder(
                     text = text("No upcoming classes"), contentDescription = text("Open ETH Schedule"),
                 ).setTapAction(tap).build()
-
-                ComplicationType.RANGED_VALUE -> RangedValueComplicationData.Builder(
-                    value = 0f, min = 0f, max = 1f, contentDescription = text("Open ETH Schedule"),
-                ).setText(text("—")).setTapAction(tap).build()
 
                 else -> null
             }
@@ -107,24 +96,6 @@ class NextClassComplicationService : SuspendingComplicationDataSourceService() {
                     text = text(detail),
                     contentDescription = text("Next: ${event.title} at $time"),
                 ).setTitle(text(event.title)).setTapAction(tap).build()
-            }
-
-            ComplicationType.RANGED_VALUE -> {
-                val end = event.end ?: event.start.plusHours(1)
-                val ongoing = !now.isBefore(event.start) && now.isBefore(end)
-                // Arc = how soon (or how far into an ongoing class); text = the class time.
-                val (value, max) = if (ongoing) {
-                    val total = ChronoUnit.MINUTES.between(event.start, end).coerceAtLeast(1)
-                    ChronoUnit.MINUTES.between(event.start, now).toFloat() to total.toFloat()
-                } else {
-                    val window = 180L
-                    val mins = ChronoUnit.MINUTES.between(now, event.start).coerceIn(0, window)
-                    (window - mins).toFloat() to window.toFloat()
-                }
-                RangedValueComplicationData.Builder(
-                    value = value, min = 0f, max = max,
-                    contentDescription = text("Next: ${event.title} at $time in ${event.location ?: "?"}"),
-                ).setText(text(place)).setTitle(text(event.title)).setTapAction(tap).build()
             }
 
             else -> null
