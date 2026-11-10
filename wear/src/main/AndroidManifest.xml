@@ -48,7 +48,7 @@
             </intent-filter>
             <meta-data
                 android:name="android.support.wearable.complications.SUPPORTED_TYPES"
-                android:value="SHORT_TEXT,LONG_TEXT" />
+                android:value="SHORT_TEXT,LONG_TEXT,RANGED_VALUE" />
             <!--
                 No periodic system wake-up (0): refreshes are scheduled by
                 ComplicationUpdateScheduler at :40 between 06:40 and 20:40 only, plus
