@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PolyWear Privacy Policy</title>
+<meta name="description" content="How PolyWear handles your data.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <a class="brand" href="./">PolyWear</a>
+  <nav><a href="privacy.html">Privacy</a><a href="https://github.com/ncavallini/polywear">GitHub</a></nav>
+</header>
+<main>
+  <h1>Privacy Policy</h1>
+  <p class="lead">Last updated: 11 November 2026</p>
+
+  <p>PolyWear consists of a Wear OS watch app and an Android phone companion app ("the apps"), developed by Niccolò Cavallini as an independent personal project. This policy explains what data the apps handle. In short: <strong>your data stays on your devices and goes only to ETH Zürich's eduapp service. The developer receives nothing.</strong></p>
+
+  <h2>What data the apps handle</h2>
+  <ul>
+    <li><strong>eduapp session credential.</strong> When you sign in through the phone app, your login happens on ETH Zürich's own login pages inside a web view. PolyWear never sees or stores your username or password. After login, the phone app reads the resulting eduapp session cookie and sends it to your paired watch.</li>
+    <li><strong>Your class schedule.</strong> The watch app uses that session to download your schedule (course titles, codes, types, times and locations) from eduapp.</li>
+  </ul>
+
+  <h2>Where the data goes</h2>
+  <ul>
+    <li><strong>Between your phone and watch</strong> — via Google's Wearable Data Layer, which transfers data directly between your paired devices.</li>
+    <li><strong>To eduapp.ethz.ch</strong> — the session credential is sent to ETH Zürich's eduapp service to request your schedule, and the phone may reload eduapp in the background to renew an expired session. This is the only server the apps contact.</li>
+  </ul>
+  <p>The apps have no backend of their own and contain no analytics, advertising, crash reporting or tracking. No data is sent to the developer or any other third party.</p>
+
+  <h2>Storage on your devices</h2>
+  <ul>
+    <li>The watch stores the session credential encrypted, and caches the last fetched schedule so it can show it offline.</li>
+    <li>The phone keeps the eduapp login session in its web view storage so it can renew the watch's credential without you signing in again.</li>
+  </ul>
+  <p>You can delete all of this at any time by clearing the apps' data or uninstalling them.</p>
+
+  <h2>ETH Zürich</h2>
+  <p>Your login and schedule are processed by ETH Zürich under its own privacy policy. PolyWear is not affiliated with or endorsed by ETH Zürich.</p>
+
+  <h2>Children</h2>
+  <p>The apps are intended for ETH Zürich students and are not directed at children.</p>
+
+  <h2>Changes</h2>
+  <p>If this policy changes, the updated version will be published on this page with a new date.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about this policy? Open an issue on <a href="https://github.com/ncavallini/polywear/issues">GitHub</a>.</p>
+</main>
+<footer>© 2026 Niccolò Cavallini · <a href="https://github.com/ncavallini/polywear/blob/main/LICENSE">MIT License</a> · <a href="./">Home</a></footer>
+</body>
+</html>
