@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PolyWear</title>
+<meta name="description" content="Your ETH Zürich class schedule on your Wear OS watch.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <a class="brand" href="./">PolyWear</a>
+  <nav><a href="privacy.html">Privacy</a><a href="https://github.com/ncavallini/polywear">GitHub</a></nav>
+</header>
+<main>
+  <h1>Your ETH class schedule, on your wrist.</h1>
+  <p class="lead">PolyWear is a Wear OS app that shows your week grouped by day, with the next class in focus — plus a small phone companion that handles login.</p>
+  <a class="btn" href="https://github.com/ncavallini/polywear/releases/latest">Download APKs</a>
+  <a class="btn ghost" href="https://github.com/ncavallini/polywear">View source</a>
+
+  <div class="shots">
+    <figure><img src="screenshots/schedule-list.png" alt="Week grouped by day, today highlighted"><figcaption>Day-grouped week</figcaption></figure>
+    <figure><img src="screenshots/class-detail.png" alt="Focused next class card"><figcaption>Class detail</figcaption></figure>
+    <figure><img src="screenshots/week-days.png" alt="Scrolling into the next day"><figcaption>Next day</figcaption></figure>
+    <figure><img src="screenshots/complication.png" alt="Next-class watch-face complication"><figcaption>Complication</figcaption></figure>
+  </div>
+
+  <h2>Features</h2>
+  <ul class="features">
+    <li>Current week grouped by day, today highlighted</li>
+    <li>Browse to next and previous weeks</li>
+    <li>Opens focused on your next (or ongoing) class</li>
+    <li>Per-course colours; tap a class for time, location and category</li>
+    <li>Watch-face complication showing your next class</li>
+    <li>Works offline: the last fetched week is cached on the watch</li>
+  </ul>
+
+  <h2>How it works</h2>
+  <p>ETH's login can't be completed on a watch, so PolyWear comes as two apps:</p>
+  <ul>
+    <li><strong>Phone companion</strong> — you sign in to eduapp in a normal web login screen. The app captures the resulting session and sends it to your watch over the Wear OS Data Layer.</li>
+    <li><strong>Watch app</strong> — stores that session encrypted, fetches your schedule directly from eduapp, and shows it.</li>
+  </ul>
+
+  <h2>Getting started</h2>
+  <ol>
+    <li>Install the phone APK on your phone and the watch APK on your paired Wear OS watch.</li>
+    <li>On the phone, open <strong>PolyWear Login</strong> and sign in to eduapp, then tap <strong>Send credential to watch</strong>.</li>
+    <li>On the watch, open <strong>PolyWear</strong>. Your week appears, grouped by day.</li>
+  </ol>
+
+  <h2>Limitations</h2>
+  <ul>
+    <li>Login capture is brittle: changes to eduapp's login can break it.</li>
+    <li>For personal use only — PolyWear only accesses your own schedule with your own login.</li>
+  </ul>
+
+  <p class="note"><strong>Unofficial.</strong> PolyWear is an independent, personal project. It is not affiliated with, endorsed by, or supported by ETH Zürich. "ETH" and "eduapp" belong to ETH Zürich.</p>
+</main>
+<footer>© 2026 Niccolò Cavallini · <a href="https://github.com/ncavallini/polywear/blob/main/LICENSE">MIT License</a> · <a href="privacy.html">Privacy Policy</a></footer>
+</body>
+</html>
